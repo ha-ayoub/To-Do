@@ -10,6 +10,7 @@ namespace TodoApi.Extensions
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<ITodoRepository, TodoRepository>();
+            services.AddScoped<IPriorityRepository, PriorityRepository>();
 
             return services;
         }
@@ -18,6 +19,7 @@ namespace TodoApi.Extensions
         public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
             services.AddScoped<ITodoService, TodoService>();
+            services.AddScoped<IPriorityService, PriorityService>();
 
             return services;
         }

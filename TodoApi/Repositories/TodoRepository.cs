@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TodoApi.Data;
+using TodoApi.DTOs;
 using TodoApi.Models;
 using TodoApi.Repositories.Interfaces;
 
@@ -22,12 +23,43 @@ namespace TodoApi.Repositories
                 query = query.Where(t => t.IsCompleted == isCompleted.Value);
 
             if (priority.HasValue)
-                query = query.Where(t => t.Priority == priority.Value);
+                query = query.Where(t => t.PriorityId == priority.Value);
 
             return await query
                 .OrderByDescending(t => t.Priority)
                 .ThenByDescending(t => t.CreatedAt)
                 .ToListAsync();
+        }
+
+        public async Task<PaginatedResponse<TodoItem>> GetAllAsync(int pageNumber = 1, int pageSize = 10, bool? isCompleted = null, int? priorityId = null)
+        {
+            var query = _context.TodoItems
+                .Include(t => t.Priority)
+                .AsQueryable();
+
+            if (isCompleted.HasValue)
+                query = query.Where(t => t.IsCompleted == isCompleted.Value);
+
+            if (priorityId.HasValue)
+                query = query.Where(t => t.PriorityId == priorityId.Value);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(t => t.Priority.Order)
+                .ThenByDescending(t => t.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PaginatedResponse<TodoItem>
+            {
+                Items = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            };
         }
 
         public async Task<TodoItem?> GetByIdAsync(int id)
@@ -82,7 +114,7 @@ namespace TodoApi.Repositories
             var total = await _context.TodoItems.CountAsync();
             var completed = await _context.TodoItems.CountAsync(t => t.IsCompleted);
             var pending = total - completed;
-            var urgent = await _context.TodoItems.CountAsync(t => t.Priority == 2 && !t.IsCompleted);
+            var urgent = await _context.TodoItems.CountAsync(t => t.PriorityId == 3 && !t.IsCompleted);
 
             return (total, completed, pending, urgent);
         }

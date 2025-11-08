@@ -1,18 +1,33 @@
-﻿namespace TodoApi.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TodoApi.DTOs
 {
     public class CreateTodoDto
     {
-        public required string Title { get; set; }
+        [Required(ErrorMessage = "Le titre est obligatoire")]
+        [MaxLength(200, ErrorMessage = "Le titre ne peut pas dépasser 200 caractères")]
+        public string Title { get; set; } = string.Empty;
+
+        [MaxLength(1000, ErrorMessage = "La description ne peut pas dépasser 1000 caractères")]
         public string? Description { get; set; }
-        public int Priority { get; set; } = 0;
+
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Une priorité valide doit être sélectionnée")]
+        public int PriorityId { get; set; } = 1;
     }
 
     public class UpdateTodoDto
     {
+        [MaxLength(200)]
         public string? Title { get; set; }
+
+        [MaxLength(1000)]
         public string? Description { get; set; }
+
         public bool? IsCompleted { get; set; }
-        public int? Priority { get; set; }
+
+        [Range(1, int.MaxValue)]
+        public int? PriorityId { get; set; }
     }
 
     public class TodoItemDto
@@ -21,7 +36,7 @@
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public bool IsCompleted { get; set; }
-        public int Priority { get; set; }
+        public PriorityDto Priority { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
     }
@@ -32,6 +47,17 @@
         public int Completed { get; set; }
         public int Pending { get; set; }
         public int Urgent { get; set; }
+    }
+
+    public class PaginatedResponse<T>
+    {
+        public List<T> Items { get; set; } = new();
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+        public int TotalPages { get; set; }
+        public int TotalCount { get; set; }
+        public bool HasPreviousPage => PageNumber > 1;
+        public bool HasNextPage => PageNumber < TotalPages;
     }
 
 }

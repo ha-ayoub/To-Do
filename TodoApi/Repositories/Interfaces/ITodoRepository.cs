@@ -1,10 +1,12 @@
-﻿using TodoApi.Models;
+﻿using TodoApi.DTOs;
+using TodoApi.Models;
 
 namespace TodoApi.Repositories.Interfaces
 {
     public interface ITodoRepository
     {
         Task<IEnumerable<TodoItem>> GetAllAsync(bool? isCompleted = null, int? priority = null);
+        Task<PaginatedResponse<TodoItem>> GetAllAsync(int pageNumber = 1, int pageSize = 10, bool? isCompleted = null, int? priorityId = null);
         Task<TodoItem?> GetByIdAsync(int id);
         Task<TodoItem> CreateAsync(TodoItem todoItem);
         Task<TodoItem> UpdateAsync(TodoItem todoItem);

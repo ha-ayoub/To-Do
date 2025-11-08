@@ -10,20 +10,38 @@ namespace TodoApi.Data
         }
 
         public DbSet<TodoItem> TodoItems { get; set; }
+        public DbSet<Priority> Priorities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<TodoItem>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.Description).HasMaxLength(1000);
-                entity.HasIndex(e => e.CreatedAt);
-                entity.HasIndex(e => e.IsCompleted);
-            });
+            modelBuilder.Entity<Priority>().HasData(
+                new Priority
+                {
+                    Id = 1,
+                    Name = "Normal",
+                    Color = "#6b7280",
+                    Icon = "Circle",
+                    Order = 0
+                },
+                new Priority
+                {
+                    Id = 2,
+                    Name = "Important",
+                    Color = "#f59e0b",
+                    Icon = "AlertTriangle",
+                    Order = 1
+                },
+                new Priority
+                {
+                    Id = 3,
+                    Name = "Urgent",
+                    Color = "#ef4444",
+                    Icon = "AlertCircle",
+                    Order = 2
+                }
+            );
         }
-        
     }
 }

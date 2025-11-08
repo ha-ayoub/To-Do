@@ -12,20 +12,60 @@ namespace TodoApi.Services
         private readonly IMapper _mapper;
         private readonly ILogger<TodoService> _logger;
 
-        public TodoService(ITodoRepository repository, IMapper mapper, ILogger<TodoService> logger)
+        public TodoService(
+            ITodoRepository repository,
+            IMapper mapper,
+            ILogger<TodoService> logger)
         {
             _repository = repository;
             _mapper = mapper;
             _logger = logger;
         }
 
+        public async Task<PaginatedResponse<TodoItemDto>> GetAllTodosAsync(
+            int pageNumber = 1,
+            int pageSize = 10,
+            bool? isCompleted = null,
+            int? priorityId = null)
+        {
+            try
+            {
+                var paginatedTodos = await _repository.GetAllAsync(pageNumber, pageSize, isCompleted, priorityId);
+
+                return new PaginatedResponse<TodoItemDto>
+                {
+                    Items = _mapper.Map<List<TodoItemDto>>(paginatedTodos.Items),
+                    PageNumber = paginatedTodos.PageNumber,
+                    PageSize = paginatedTodos.PageSize,
+                    TotalCount = paginatedTodos.TotalCount,
+                    TotalPages = paginatedTodos.TotalPages
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting todos");
+                throw;
+            }
+        }
+
+        public async Task<TodoItemDto?> GetTodoByIdAsync(int id)
+        {
+            try
+            {
+                var todo = await _repository.GetByIdAsync(id);
+                return todo == null ? null : _mapper.Map<TodoItemDto>(todo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting todo with id {Id}", id);
+                throw;
+            }
+        }
+
         public async Task<TodoItemDto> CreateTodoAsync(CreateTodoDto dto)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(dto.Title))
-                    throw new ArgumentException("Title cannot be empty");
-
                 var todoItem = _mapper.Map<TodoItem>(dto);
                 todoItem.CreatedAt = DateTime.UtcNow;
                 todoItem.IsCompleted = false;
@@ -51,14 +91,17 @@ namespace TodoApi.Services
                 if (existingTodo == null)
                     return null;
 
+                // Appliquer les mises à jour
                 if (!string.IsNullOrWhiteSpace(dto.Title))
                     existingTodo.Title = dto.Title.Trim();
 
                 if (dto.Description != null)
-                    existingTodo.Description = dto.Description.Trim();
+                    existingTodo.Description = string.IsNullOrWhiteSpace(dto.Description)
+                        ? null
+                        : dto.Description.Trim();
 
-                if (dto.Priority.HasValue)
-                    existingTodo.Priority = dto.Priority.Value;
+                if (dto.PriorityId.HasValue)
+                    existingTodo.PriorityId = dto.PriorityId.Value;
 
                 if (dto.IsCompleted.HasValue)
                 {
@@ -75,23 +118,6 @@ namespace TodoApi.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while updating todo with id {Id}", id);
-                throw;
-            }
-        }
-
-        public async Task<int> DeleteCompletedTodosAsync()
-        {
-            try
-            {
-                var count = await _repository.DeleteCompletedAsync();
-
-                _logger.LogInformation("{Count} completed todos deleted", count);
-
-                return count;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while deleting completed todos");
                 throw;
             }
         }
@@ -116,16 +142,19 @@ namespace TodoApi.Services
             }
         }
 
-        public async Task<IEnumerable<TodoItemDto>> GetAllTodosAsync(bool? isCompleted = null, int? priority = null)
+        public async Task<int> DeleteCompletedTodosAsync()
         {
             try
             {
-                var todos = await _repository.GetAllAsync(isCompleted, priority);
-                return _mapper.Map<IEnumerable<TodoItemDto>>(todos);
+                var count = await _repository.DeleteCompletedAsync();
+
+                _logger.LogInformation("{Count} completed todos deleted", count);
+
+                return count;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting all todos");
+                _logger.LogError(ex, "Error occurred while deleting completed todos");
                 throw;
             }
         }
@@ -147,20 +176,6 @@ namespace TodoApi.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while getting stats");
-                throw;
-            }
-        }
-
-        public async Task<TodoItemDto?> GetTodoByIdAsync(int id)
-        {
-            try
-            {
-                var todo = await _repository.GetByIdAsync(id);
-                return todo == null ? null : _mapper.Map<TodoItemDto>(todo);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting todo with id {Id}", id);
                 throw;
             }
         }

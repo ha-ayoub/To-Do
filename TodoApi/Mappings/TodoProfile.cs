@@ -4,9 +4,9 @@ using TodoApi.Models;
 
 namespace TodoApi.Mappings
 {
-    public class MappingProfile : Profile
+    public class TodoProfile : Profile
     {
-        public MappingProfile()
+        public TodoProfile()
         {
             CreateMap<TodoItem, TodoItemDto>();
 

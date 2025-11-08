@@ -4,9 +4,8 @@ using TodoApi.Services.Interfaces;
 
 namespace TodoApi.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class TodoController : ControllerBase
+
+    public class TodoController : BaseAPIController
     {
         private readonly ITodoService _todoService;
         private readonly ILogger<TodoController> _logger;
@@ -18,12 +17,18 @@ namespace TodoApi.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItemDto>>> GetTodoItems(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
             [FromQuery] bool? isCompleted = null,
-            [FromQuery] int? priority = null)
+            [FromQuery] int? priorityId = null)
         {
             try
             {
-                var todos = await _todoService.GetAllTodosAsync(isCompleted, priority);
+                if (pageNumber < 1) pageNumber = 1;
+                if (pageSize < 1) pageSize = 10;
+                if (pageSize > 100) pageSize = 100;
+
+                var todos = await _todoService.GetAllTodosAsync(pageNumber, pageSize, isCompleted, priorityId);
                 return Ok(todos);
             }
             catch (Exception ex)

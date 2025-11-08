@@ -1,5 +1,4 @@
-﻿using TodoApi.DTOs;
-using TodoApi.Models;
+﻿using TodoApi.Models;
 
 namespace TodoApi.Repositories.Interfaces
 {

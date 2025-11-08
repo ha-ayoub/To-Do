@@ -4,15 +4,15 @@ namespace TodoApi.DTOs
 {
     public class CreateTodoDto
     {
-        [Required(ErrorMessage = "Le titre est obligatoire")]
-        [MaxLength(200, ErrorMessage = "Le titre ne peut pas dépasser 200 caractères")]
+        [Required(ErrorMessage = "The title is required.")]
+        [MaxLength(200, ErrorMessage = "The title cannot exceed 200 characters.")]
         public string Title { get; set; } = string.Empty;
 
-        [MaxLength(1000, ErrorMessage = "La description ne peut pas dépasser 1000 caractères")]
+        [MaxLength(1000, ErrorMessage = "The description cannot exceed 1000 characters.")]
         public string? Description { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Une priorité valide doit être sélectionnée")]
+        [Range(1, int.MaxValue, ErrorMessage = "A valid priority must be selected.")]
         public int PriorityId { get; set; } = 1;
     }
 

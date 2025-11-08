@@ -91,7 +91,6 @@ namespace TodoApi.Services
                 if (existingTodo == null)
                     return null;
 
-                // Appliquer les mises à jour
                 if (!string.IsNullOrWhiteSpace(dto.Title))
                     existingTodo.Title = dto.Title.Trim();
 

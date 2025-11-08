@@ -1,0 +1,33 @@
+@TodoApi_HostAddress = http://localhost:5048
+@ContentType = application/json
+
+###GET — Récupérer tous les todos
+GET {{TodoApi_HostAddress}}/api/todo
+Accept: {{ContentType}}
+
+###GET — Récupérer un todo par ID
+GET {{TodoApi_HostAddress}}/api/todo/1
+Accept: {{ContentType}}
+
+###POST — Créer un nouveau todo
+POST {{TodoApi_HostAddress}}/api/todo
+Content-Type: {{ContentType}}
+
+{
+  "title": "Acheter du lait",
+  "description": "Penser à prendre du bio"
+}
+
+###PUT — Mettre à jour un todo existant
+PUT {{TodoApi_HostAddress}}/api/todo/1
+Content-Type: {{ContentType}}
+
+{
+  "id": 1,
+  "title": "Acheter du lait et du pain",
+  "description": "Mettre à jour la liste de courses",
+  "isCompleted": false
+}
+
+###DELETE — Supprimer un todo
+DELETE {{TodoApi_HostAddress}}/api/todo/1

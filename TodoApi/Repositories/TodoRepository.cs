@@ -15,22 +15,6 @@ namespace TodoApi.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<TodoItem>> GetAllAsync(bool? isCompleted = null, int? priority = null)
-        {
-            var query = _context.TodoItems.AsQueryable();
-
-            if (isCompleted.HasValue)
-                query = query.Where(t => t.IsCompleted == isCompleted.Value);
-
-            if (priority.HasValue)
-                query = query.Where(t => t.PriorityId == priority.Value);
-
-            return await query
-                .OrderByDescending(t => t.Priority)
-                .ThenByDescending(t => t.CreatedAt)
-                .ToListAsync();
-        }
-
         public async Task<PaginatedResponse<TodoItem>> GetAllAsync(int pageNumber = 1, int pageSize = 10, bool? isCompleted = null, int? priorityId = null)
         {
             var query = _context.TodoItems
@@ -64,13 +48,18 @@ namespace TodoApi.Repositories
 
         public async Task<TodoItem?> GetByIdAsync(int id)
         {
-            return await _context.TodoItems.FindAsync(id);
+            return await _context.TodoItems
+                .Include(t => t.Priority)
+                .FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task<TodoItem> CreateAsync(TodoItem todoItem)
         {
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
+
+            await _context.Entry(todoItem).Reference(t => t.Priority).LoadAsync();
+
             return todoItem;
         }
 
@@ -78,6 +67,9 @@ namespace TodoApi.Repositories
         {
             _context.TodoItems.Update(todoItem);
             await _context.SaveChangesAsync();
+
+            await _context.Entry(todoItem).Reference(t => t.Priority).LoadAsync();
+
             return todoItem;
         }
 

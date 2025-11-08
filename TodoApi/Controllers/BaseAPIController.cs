@@ -4,11 +4,8 @@ namespace TodoApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BaseAPIController : Controller
+    public abstract class BaseAPIController : ControllerBase
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+
     }
 }

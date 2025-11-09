@@ -1,0 +1,251 @@
+.todo-item {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+  border-left-width: 4px;
+}
+
+.todo-item:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.todo-item.todo-completed {
+  opacity: 0.7;
+}
+
+.todo-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.todo-checkbox {
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.todo-checkbox:hover {
+  border-color: #2563eb;
+}
+
+.todo-checkbox.checkbox-checked {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.check-icon {
+  width: 16px;
+  height: 16px;
+  color: white;
+  stroke-width: 3;
+}
+
+.todo-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.todo-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.todo-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.todo-title.title-completed {
+  text-decoration: line-through;
+  color: #6b7280;
+}
+
+.priority-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.priority-badge.priority-normal {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.priority-badge.priority-important {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.priority-badge.priority-urgent {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.todo-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.todo-description.description-completed {
+  text-decoration: line-through;
+}
+
+.todo-metadata {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  flex-wrap: wrap;
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.metadata-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.completed-badge {
+  color: #16a34a;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  padding: 0.5rem;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.edit-btn {
+  color: #2563eb;
+}
+
+.edit-btn:hover {
+  background: #eff6ff;
+}
+
+.delete-btn {
+  color: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #fef2f2;
+}
+
+.todo-item-edit {
+  background: white;
+  border: 2px solid #2563eb;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.edit-input,
+.edit-textarea,
+.edit-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.edit-input:focus,
+.edit-textarea:focus,
+.edit-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.edit-textarea {
+  resize: none;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-btn-save,
+.edit-btn-cancel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-btn-save {
+  background: #16a34a;
+  color: white;
+}
+
+.edit-btn-save:hover {
+  background: #15803d;
+}
+
+.edit-btn-cancel {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.edit-btn-cancel:hover {
+  background: #d1d5db;
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+}

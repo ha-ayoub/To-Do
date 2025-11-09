@@ -3,7 +3,8 @@
 **Langues / Languages:**  
 🇫🇷 [Français](#fr) | 🇬🇧 [English](#en)
 
-📋 Description
+# 📋 Description
+
 Application de gestion de tâches full-stack moderne développée avec .NET Core (backend) et React (frontend). Cette application permet de créer, gérer et organiser vos tâches quotidiennes avec un système de priorités, une pagination intelligente et une interface utilisateur élégante.
 
 ✨ Fonctionnalités
@@ -41,6 +42,8 @@ Frontend (React)
     
 <br><br><br>
 <h2 id="en">🇬🇧 English Version</h2>
+ 
+# 📋 Description
 
 Modern full-stack task management application built with .NET Core (backend) and React (frontend). This application allows you to create, manage, and organize your daily tasks with a priority system, smart pagination, and an elegant user interface.
 

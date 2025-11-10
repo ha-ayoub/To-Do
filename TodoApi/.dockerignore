@@ -1,0 +1,15 @@
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/node_modules
+**/.git
+**/.gitignore
+**/.dockerignore
+**/Dockerfile
+**/docker-compose*
+**/.env
+**/secrets.json

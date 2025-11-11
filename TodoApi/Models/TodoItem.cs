@@ -9,16 +9,16 @@ namespace TodoApi.Models
         [Required]
         [MaxLength(200)]
         public string Title { get; set; } = string.Empty;
-
         [MaxLength(1000)]
         public string? Description { get; set; }
-
         public bool IsCompleted { get; set; }
 
         [Required]
         public int PriorityId { get; set; }
-
         public Priority Priority { get; set; } = null!;
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+        public User User { get; set; } = null!;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? CompletedAt { get; set; }

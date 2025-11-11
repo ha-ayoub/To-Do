@@ -15,10 +15,11 @@ namespace TodoApi.Repositories
             _context = context;
         }
 
-        public async Task<PaginatedResponse<TodoItem>> GetAllAsync(int pageNumber = 1, int pageSize = 10, bool? isCompleted = null, int? priorityId = null)
+        public async Task<PaginatedResponse<TodoItem>> GetAllAsync(string userId, int pageNumber = 1, int pageSize = 10, bool? isCompleted = null, int? priorityId = null)
         {
             var query = _context.TodoItems
                 .Include(t => t.Priority)
+                .Where(t => t.UserId == userId)
                 .AsQueryable();
 
             if (isCompleted.HasValue)
@@ -84,10 +85,10 @@ namespace TodoApi.Repositories
             return true;
         }
 
-        public async Task<int> DeleteCompletedAsync()
+        public async Task<int> DeleteCompletedAsync(string userId)
         {
             var completedItems = await _context.TodoItems
-                .Where(t => t.IsCompleted)
+                .Where(t =>t.UserId == userId && t.IsCompleted)
                 .ToListAsync();
 
             _context.TodoItems.RemoveRange(completedItems);
@@ -101,12 +102,12 @@ namespace TodoApi.Repositories
             return await _context.TodoItems.AnyAsync(e => e.Id == id);
         }
 
-        public async Task<(int total, int completed, int pending, int urgent)> GetStatsAsync()
+        public async Task<(int total, int completed, int pending, int urgent)> GetStatsAsync(string userId)
         {
-            var total = await _context.TodoItems.CountAsync();
-            var completed = await _context.TodoItems.CountAsync(t => t.IsCompleted);
+            var total = await _context.TodoItems.CountAsync(t => t.UserId == userId);
+            var completed = await _context.TodoItems.CountAsync(t => t.UserId == userId && t.IsCompleted);
             var pending = total - completed;
-            var urgent = await _context.TodoItems.CountAsync(t => t.PriorityId == 3 && !t.IsCompleted);
+            var urgent = await _context.TodoItems.CountAsync(t => t.UserId == userId && t.PriorityId == 3 && !t.IsCompleted);
 
             return (total, completed, pending, urgent);
         }

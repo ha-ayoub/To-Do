@@ -11,6 +11,7 @@ namespace TodoApi.Extensions
         {
             services.AddScoped<ITodoRepository, TodoRepository>();
             services.AddScoped<IPriorityRepository, PriorityRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
         }
@@ -20,6 +21,9 @@ namespace TodoApi.Extensions
         {
             services.AddScoped<ITodoService, TodoService>();
             services.AddScoped<IPriorityService, PriorityService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserService, UserService>();
 
             return services;
         }

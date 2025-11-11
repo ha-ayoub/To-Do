@@ -11,10 +11,7 @@ namespace TodoApi.Services
         private readonly IMapper _mapper;
         private readonly ILogger<PriorityService> _logger;
 
-        public PriorityService(
-            IPriorityRepository repository,
-            IMapper mapper,
-            ILogger<PriorityService> logger)
+        public PriorityService(IPriorityRepository repository, IMapper mapper, ILogger<PriorityService> logger)
         {
             _repository = repository;
             _mapper = mapper;

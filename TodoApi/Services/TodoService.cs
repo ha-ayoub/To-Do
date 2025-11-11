@@ -12,34 +12,20 @@ namespace TodoApi.Services
         private readonly IMapper _mapper;
         private readonly ILogger<TodoService> _logger;
 
-        public TodoService(
-            ITodoRepository repository,
-            IMapper mapper,
-            ILogger<TodoService> logger)
+        public TodoService(ITodoRepository repository, IMapper mapper, ILogger<TodoService> logger)
         {
             _repository = repository;
             _mapper = mapper;
             _logger = logger;
         }
 
-        public async Task<PaginatedResponse<TodoItemDto>> GetAllTodosAsync(
-            int pageNumber = 1,
-            int pageSize = 10,
-            bool? isCompleted = null,
-            int? priorityId = null)
+        public async Task<PaginatedResponse<TodoItemDto>> GetAllTodosAsync(string userId, int pageNumber = 1, int pageSize = 10, bool? isCompleted = null, int? priorityId = null)
         {
             try
             {
-                var paginatedTodos = await _repository.GetAllAsync(pageNumber, pageSize, isCompleted, priorityId);
+                var paginatedTodos = await _repository.GetAllAsync(userId, pageNumber, pageSize, isCompleted, priorityId);
 
-                return new PaginatedResponse<TodoItemDto>
-                {
-                    Items = _mapper.Map<List<TodoItemDto>>(paginatedTodos.Items),
-                    PageNumber = paginatedTodos.PageNumber,
-                    PageSize = paginatedTodos.PageSize,
-                    TotalCount = paginatedTodos.TotalCount,
-                    TotalPages = paginatedTodos.TotalPages
-                };
+                return _mapper.Map<PaginatedResponse<TodoItemDto>>(paginatedTodos);
             }
             catch (Exception ex)
             {
@@ -141,11 +127,11 @@ namespace TodoApi.Services
             }
         }
 
-        public async Task<int> DeleteCompletedTodosAsync()
+        public async Task<int> DeleteCompletedTodosAsync(string userId)
         {
             try
             {
-                var count = await _repository.DeleteCompletedAsync();
+                var count = await _repository.DeleteCompletedAsync(userId);
 
                 _logger.LogInformation("{Count} completed todos deleted", count);
 
@@ -158,11 +144,11 @@ namespace TodoApi.Services
             }
         }
 
-        public async Task<TodoStatsDto> GetStatsAsync()
+        public async Task<TodoStatsDto> GetStatsAsync(string userId)
         {
             try
             {
-                var (total, completed, pending, urgent) = await _repository.GetStatsAsync();
+                var (total, completed, pending, urgent) = await _repository.GetStatsAsync(userId);
 
                 return new TodoStatsDto
                 {

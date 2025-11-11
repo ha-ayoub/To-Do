@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TodoApi.DTOs;
+using TodoApi.Extensions;
 using TodoApi.Services.Interfaces;
 
 namespace TodoApi.Controllers
 {
-
+    [Authorize]
     public class TodoController : BaseAPIController
     {
         private readonly ITodoService _todoService;
@@ -24,11 +27,15 @@ namespace TodoApi.Controllers
         {
             try
             {
+                var userId = User.GetUserId();
+                if (userId == null)
+                    return Unauthorized();
+
                 if (pageNumber < 1) pageNumber = 1;
                 if (pageSize < 1) pageSize = 10;
                 if (pageSize > 100) pageSize = 100;
 
-                var todos = await _todoService.GetAllTodosAsync(pageNumber, pageSize, isCompleted, priorityId);
+                var todos = await _todoService.GetAllTodosAsync(userId, pageNumber, pageSize, isCompleted, priorityId);
                 return Ok(todos);
             }
             catch (Exception ex)
@@ -62,6 +69,11 @@ namespace TodoApi.Controllers
         {
             try
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId == null)
+                    return Unauthorized();
+
+                dto.UserId = userId;
                 var created = await _todoService.CreateTodoAsync(dto);
                 return CreatedAtAction(nameof(GetTodoItem), new { id = created.Id }, created);
             }
@@ -81,6 +93,12 @@ namespace TodoApi.Controllers
         {
             try
             {
+                var userId = User.GetUserId();
+                if (userId == null)
+                    return Unauthorized();
+
+                dto.UserId = userId;
+
                 var updated = await _todoService.UpdateTodoAsync(id, dto);
 
                 if (updated == null)
@@ -121,7 +139,11 @@ namespace TodoApi.Controllers
         {
             try
             {
-                var count = await _todoService.DeleteCompletedTodosAsync();
+                var userId = User.GetUserId();
+                if (userId == null)
+                    return Unauthorized();
+
+                var count = await _todoService.DeleteCompletedTodosAsync(userId);
                 return Ok(new { deletedCount = count, message = $"{count} completed todo(s) deleted" });
             }
             catch (Exception ex)
@@ -137,7 +159,11 @@ namespace TodoApi.Controllers
         {
             try
             {
-                var stats = await _todoService.GetStatsAsync();
+                var userId = User.GetUserId();
+                if (userId == null)
+                    return Unauthorized();
+
+                var stats = await _todoService.GetStatsAsync(userId);
                 return Ok(stats);
             }
             catch (Exception ex)

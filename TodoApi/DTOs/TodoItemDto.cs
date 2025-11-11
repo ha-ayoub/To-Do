@@ -14,6 +14,7 @@ namespace TodoApi.DTOs
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "A valid priority must be selected.")]
         public int PriorityId { get; set; } = 1;
+        public string? UserId { get; set; }
     }
 
     public class UpdateTodoDto
@@ -28,6 +29,8 @@ namespace TodoApi.DTOs
 
         [Range(1, int.MaxValue)]
         public int? PriorityId { get; set; }
+
+        public string? UserId { get; set; }
     }
 
     public class TodoItemDto

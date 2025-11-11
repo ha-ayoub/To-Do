@@ -10,6 +10,9 @@ namespace TodoApi.Mappings
         {
             CreateMap<TodoItem, TodoItemDto>();
 
+            CreateMap<PaginatedResponse<TodoItem>, PaginatedResponse<TodoItemDto>>()
+                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+
             CreateMap<CreateTodoDto, TodoItem>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.IsCompleted, opt => opt.Ignore())

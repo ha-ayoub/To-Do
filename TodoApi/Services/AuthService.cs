@@ -140,6 +140,7 @@ namespace TodoApi.Services
             var authResponseDto = _mapper.Map<AuthResponseDto>(user);
             authResponseDto.LastName = user.LastName;
             authResponseDto.Token = accessToken;
+            authResponseDto.RefreshToken = refreshToken.Token;
 
             return authResponseDto;
 

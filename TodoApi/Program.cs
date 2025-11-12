@@ -33,12 +33,27 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 // JWT Settings
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-builder.Services.Configure<JwtSettings>(jwtSettings);
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+//builder.Services.Configure<JwtSettings>(jwtSettings);
 
-var secret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? 
-                jwtSettings.Get<JwtSettings>()?.Secret ?? 
-                throw new InvalidOperationException("JWT Secret not configured");
+
+// Priorité à la variable d'environnement
+var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+Console.WriteLine($"JWT_SECRET length: {secret?.Length ?? 0}");
+
+if (string.IsNullOrWhiteSpace(secret))
+{
+    secret = jwtSettings?.Secret;
+}
+
+if (string.IsNullOrWhiteSpace(secret) || secret.Length < 32)
+{
+    throw new InvalidOperationException(
+        "JWT_SECRET environment variable must be set with at least 32 characters"
+    );
+}
+
+jwtSettings.Secret = secret;
 
 // JWT Authentication
 builder.Services.AddAuthentication(options =>

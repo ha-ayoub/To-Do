@@ -1,95 +1,74 @@
-import { useTodos } from './hooks/useTodos';
-import TodoStats from './components/todo/TodoStats';
-import TodoForm from './components/todo/TodoForm';
-import TodoFilters from './components/todo/TodoFilters';
-import TodoList from './components/todo/TodoList';
-import { AlertCircle } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext.jsx';
+import { useAuth } from './hooks/useAuth';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import Navbar from './components/Layout/Navbar';
+import TodoApp from './components/TodoApp';
 import './App.css';
-import Header from './components/Layout/Header';
-import Footer from './components/Layout/Footer';
+import ProfileLayout from './components/user/ProfileLayout.jsx';
+
+const PublicRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Navigate to="/" replace /> : children;
+};
 
 function App() {
-  const {
-    todos,
-    priorities,
-    stats,
-    loading,
-    error,
-    filters,
-    setFilters,
-    pageNumber,
-    totalPages,
-    totalCount,
-    goToPage,
-    createTodo,
-    updateTodo,
-    toggleComplete,
-    deleteTodo,
-    deleteCompleted
-  } = useTodos();
+  return (
+    <Router>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </Router>
+  );
+}
 
-  const handleDeleteCompleted = async () => {
-    if (window.confirm(`Are you sure you want to delete the completed task(s) from ${stats.completed}?`)) {
-      try {
-        await deleteCompleted();
-      } catch (err) {
-        console.error('Error during deletion:', err);
-      }
-    }
-  };
+function AppRoutes() {
+  const { isAuthenticated } = useAuth();
 
   return (
-    <div className="app-container">
-      <Header />
+    <>
+      {isAuthenticated && <Navbar />}
+      
+      <Routes>
+        <Route 
+          path="/login" 
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/register" 
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          } 
+        />
 
-      <main className="main-content">
-        {error && (
-          <div className="error-alert">
-            <AlertCircle />
-            <div className="error-alert-content">
-              <p>An error has occurred</p>
-              <p>{error}</p>
-            </div>
-          </div>
-        )}
+        <Route 
+          path="/" 
+          element={
+            <ProtectedRoute>
+              <TodoApp />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <ProfileLayout />
+            </ProtectedRoute>
+          } 
+        />
 
-        <TodoStats stats={stats} />
-
-        <div className="content-grid">
-          <div className="sidebar">
-            <TodoForm 
-              onSubmit={createTodo} 
-              loading={loading}
-              priorities={priorities}
-            />
-            <TodoFilters
-              filters={filters}
-              setFilters={setFilters}
-              priorities={priorities}
-              onDeleteCompleted={handleDeleteCompleted}
-              completedCount={stats.completed}
-            />
-          </div>
-
-          <div>
-            <TodoList
-              todos={todos}
-              priorities={priorities}
-              loading={loading}
-              pageNumber={pageNumber}
-              totalPages={totalPages}
-              totalCount={totalCount}
-              onPageChange={goToPage}
-              onToggle={toggleComplete}
-              onUpdate={updateTodo}
-              onDelete={deleteTodo}
-            />
-          </div>
-        </div>
-      </main>
-
-        <Footer />
-    </div>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }
 

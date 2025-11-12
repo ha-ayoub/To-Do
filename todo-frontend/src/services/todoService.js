@@ -9,13 +9,57 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 api.interceptors.response.use(
   response => response,
-  error => {
+  async error => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        const oldToken = localStorage.getItem('accessToken');
+
+        if (refreshToken && oldToken) {
+          const response = await axios.post(`${API_URL}/auth/refresh`, {
+            token: oldToken,
+            refreshToken: refreshToken,
+          });
+
+          const { token, refreshToken: newRefreshToken } = response.data;
+
+          localStorage.setItem('accessToken', token);
+          localStorage.setItem('refreshToken', newRefreshToken);
+
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return api(originalRequest);
+        }
+      } catch (refreshError) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
+    }
+
     console.error('API Error:', error.response?.data || error.message);
     return Promise.reject(error);
   }
 );
+
 
 const todoService = {
   async getAll(pageNumber = 1, pageSize = 10, filters = {}) {

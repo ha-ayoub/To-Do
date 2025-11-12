@@ -28,7 +28,7 @@
   gap: 1rem;
 }
 
-.form-group {
+.form-group-todo {
   display: flex;
   flex-direction: column;
 }

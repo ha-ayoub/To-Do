@@ -5,7 +5,7 @@ import '../../styles/TodoForm.css';
 const TodoForm = ({ onSubmit, loading, priorities }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [priorityId, setPriorityId] = useState(1); // Par défaut: Normal
+  const [priorityId, setPriorityId] = useState(1);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
@@ -40,7 +40,7 @@ const TodoForm = ({ onSubmit, loading, priorities }) => {
       </h2>
 
       <form onSubmit={handleSubmit} className="todo-form">
-        <div className="form-group">
+        <div className="form-group-todo">
           <label htmlFor="title" className="form-label">Title *</label>
           <input
             id="title"
@@ -53,7 +53,7 @@ const TodoForm = ({ onSubmit, loading, priorities }) => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group-todo">
           <label htmlFor="description" className="form-label">Description</label>
           <textarea
             id="description"
@@ -66,7 +66,7 @@ const TodoForm = ({ onSubmit, loading, priorities }) => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group-todo">
           <label htmlFor="priority" className="form-label">Priority</label>
           <select
             id="priority"

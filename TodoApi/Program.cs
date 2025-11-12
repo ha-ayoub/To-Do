@@ -33,29 +33,26 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 // JWT Settings
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
+
+
+if (string.IsNullOrWhiteSpace(jwtSecret))
+    throw new InvalidOperationException("JWT_SECRET environment variable is not set");
+
+
+if (jwtSecret.Length < 32)
+    throw new InvalidOperationException($"JWT_SECRET must be at least 32 characters. Current: {jwtSecret.Length}");
+
+
+builder.Services.Configure<JwtSettings>(options =>
+{
+    builder.Configuration.GetSection("JwtSettings").Bind(options);
+    options.Secret = jwtSecret;
+});
+
+
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
-//builder.Services.Configure<JwtSettings>(jwtSettings);
 
-
-// Priorité à la variable d'environnement
-var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
-Console.WriteLine($"JWT_SECRET length: {secret?.Length ?? 0}");
-
-if (string.IsNullOrWhiteSpace(secret))
-{
-    secret = jwtSettings?.Secret;
-}
-
-if (string.IsNullOrWhiteSpace(secret) || secret.Length < 32)
-{
-    throw new InvalidOperationException(
-        "JWT_SECRET environment variable must be set with at least 32 characters"
-    );
-}
-
-jwtSettings.Secret = secret;
-
-// JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -66,16 +63,15 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
         ValidateIssuer = true,
-        ValidIssuer = jwtSettings.Get<JwtSettings>()?.Issuer,
+        ValidIssuer = jwtSettings?.Issuer ?? "TodoApi",
         ValidateAudience = true,
-        ValidAudience = jwtSettings.Get<JwtSettings>()?.Audience,
+        ValidAudience = jwtSettings?.Audience ?? "Todo",
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
 });
-
 
 builder.Services.AddAuthorization();
 

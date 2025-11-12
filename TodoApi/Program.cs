@@ -75,7 +75,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
             "http://localhost:5173", 
             "http://localhost:3000",
-            "https://todo-app-kappa-wheat-23.vercel.app")
+            "https://project-todo-app-25.vercel.app")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
